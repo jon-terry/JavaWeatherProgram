@@ -1,4 +1,9 @@
 import java.util.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+import org.json.*;
+import org.json.simple.JSONObject;
 
 public class program {
 
@@ -94,6 +99,24 @@ public class program {
         String weatherData = weatherAPI.getWeatherData(userLocation);
 
         // Process weather data
+        JSONObject jsonData = new JSONObject(weatherData);
+
+        double temperature = jsonData.getJSONObject("main").getDouble("temp");
+        String weatherDescription = jsonData.getJSONArray("weather").getJSONObject(0).getString("description");
+        double precipitationChance = jsonData.getJSONObject("rain").getDouble("12h");
+
+        // Email message
+        double temperatureCelsius = temperature - 273.15;
+        temperature = (temperatureCelsius * 9/5) + 32;
+
+        String emailMessage = "Hello, " + userName + "./n/n";
+        emailMessage += "Here is the weather forecast for " + userLocation + ": /n";
+        emailMessage += "Temperature: " + temperature + "°F (" + temperatureCelsius + "°C)";
+        emailMessage += "Weather description: " + weatherDescription + "/n /n";
+        emailMessage += "Thank you for using the Java Weather Program.";
+
+
+
 
 
     }
