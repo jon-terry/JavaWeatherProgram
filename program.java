@@ -3,11 +3,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import org.json.*;
-import org.json.simple.JSONObject;
+
+
 
 public class program {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JSONException {
         Scanner scanner = new Scanner(System.in);
         String userName;
         String emailAddress;
@@ -52,7 +53,7 @@ public class program {
                         Please verify that the email address is correct. You entered:
                          
                          \s""");
-                System.out.println(emailAddress + "\n");
+                System.out.println(emailAddress + "/n");
 
                 System.out.println("Is this correct? Press \"Y\" for Yes, or \"N\" for No");
 
@@ -96,7 +97,7 @@ public class program {
         String apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + userLocation + "&appid=" + apiKey;
 
         // Getting weather data
-        String weatherData = weatherAPI.getWeatherData(userLocation);
+        Map<String, Object> weatherData = weatherAPI.getWeatherData(userLocation);
 
         // Process weather data
         JSONObject jsonData = new JSONObject(weatherData);

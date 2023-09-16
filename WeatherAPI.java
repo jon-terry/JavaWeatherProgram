@@ -1,11 +1,13 @@
 import org.json.simple.JSONObject;
-
+import org.json.simple.parser.JSONParser;
+import org.json.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class WeatherAPI {
@@ -44,7 +46,14 @@ public class WeatherAPI {
                 }
                 reader.close();
 
-                JSONObject jsonObject = new JSONObject(response.toString());
+                // Parse JSON response into Map
+                JSONParser parser = new JSONParser();
+                JSONObject jsonObject = (JSONObject) parser.parse(response.toString());
+
+                // Convert JSONObject to Map
+                Map<String, Object> weatherData = new HashMap<>(jsonObject);
+
+                return weatherData;
 
             } else {
                 System.out.println("HTTP Request Failed with Response Code: " + responseCode);
@@ -52,9 +61,11 @@ public class WeatherAPI {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
+
+        } catch (org.json.simple.parser.ParseException e) {
+            throw new RuntimeException(e);
         }
     }
-
 
 }
