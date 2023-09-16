@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WeatherAPI {
-    private String apiKey;
+    private final String apiKey;
 
     public WeatherAPI(String apiKey) {
         this.apiKey = apiKey;

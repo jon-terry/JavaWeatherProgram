@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Properties;
 import org.json.*;
 
-
-
 public class program {
 
     public static void main(String[] args) throws JSONException {
@@ -116,8 +114,15 @@ public class program {
         emailMessage += "Weather description: " + weatherDescription + "/n /n";
         emailMessage += "Thank you for using the Java Weather Program.";
 
+        String recipientEmail = emailAddress;
+        String subject = "Weather forecast for " + userName + ".";
+        String message = """
+                Today's weather forecast /n
+                /n
+                /n
+                """ + emailMessage;
 
-
+        EmailSender.sendEmail(emailAddress, subject, message);
 
 
     }
