@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,7 +52,8 @@ public class program {
                         Please verify that the email address is correct. You entered:
                          
                          \s""");
-                System.out.println(emailAddress + "/n");
+                System.out.println(emailAddress);
+                System.out.println("");
 
                 System.out.println("Is this correct? Press \"Y\" for Yes, or \"N\" for No");
 
@@ -102,25 +104,28 @@ public class program {
 
         double temperature = jsonData.getJSONObject("main").getDouble("temp");
         String weatherDescription = jsonData.getJSONArray("weather").getJSONObject(0).getString("description");
-        double precipitationChance = jsonData.getJSONObject("rain").getDouble("12h");
+        //double precipitationChance = jsonData.getJSONObject("rain").getDouble("1h");
+        // Current issue with "rain" parsing in JSON
 
         // Email message
         double temperatureCelsius = temperature - 273.15;
         temperature = (temperatureCelsius * 9/5) + 32;
 
-        String emailMessage = "Hello, " + userName + "./n/n";
-        emailMessage += "Here is the weather forecast for " + userLocation + ": /n";
-        emailMessage += "Temperature: " + temperature + "°F (" + temperatureCelsius + "°C)";
-        emailMessage += "Weather description: " + weatherDescription + "/n /n";
-        emailMessage += "Thank you for using the Java Weather Program.";
+        String lineSeparator = System.lineSeparator();
+
+        String emailMessage = "Hello, " + userName + "." + lineSeparator + lineSeparator;
+        emailMessage += "Here is the weather forecast for " + userLocation + ":" + lineSeparator;
+        emailMessage += "Temperature: " + temperature + "°F (" + temperatureCelsius + "°C)" + lineSeparator;
+        emailMessage += "Weather description: " + weatherDescription + lineSeparator + lineSeparator;
+        emailMessage += "Thank you for using the Java Weather Program." + lineSeparator;
 
         String recipientEmail = emailAddress;
         String subject = "Weather forecast for " + userName + ".";
         String message = """
-                Today's weather forecast /n
-                /n
-                /n
-                """ + emailMessage;
+                Today's weather forecast:
+                
+               
+                """ + lineSeparator + emailMessage;
 
         EmailSender.sendEmail(emailAddress, subject, message);
 

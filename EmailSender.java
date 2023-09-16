@@ -41,7 +41,7 @@ public class EmailSender {
             // Send email
             Transport.send(emailMessage);
 
-            System.out.println("Email send successfully to: " + recipient);
+            System.out.println("Email sent successfully to: " + recipient);
         } catch (MessagingException e) {
             e.printStackTrace();
             System.out.println("Email sending has failed.");
@@ -51,7 +51,8 @@ public class EmailSender {
 
     private static Properties loadEmailConfig() {
         Properties emailConfig = new Properties();
-        try (FileInputStream fileInputStream = new FileInputStream("config.properties")) {
+        String filepath = "config/config.properties";
+        try (FileInputStream fileInputStream = new FileInputStream(filepath)) {
             emailConfig.load(fileInputStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,3 +62,6 @@ public class EmailSender {
     }
 
 }
+
+
+// FileInputStream error
