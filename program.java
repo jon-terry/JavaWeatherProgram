@@ -105,7 +105,7 @@ public class program {
         double temperature = jsonData.getJSONObject("main").getDouble("temp");
         String weatherDescription = jsonData.getJSONArray("weather").getJSONObject(0).getString("description");
         //double precipitationChance = jsonData.getJSONObject("rain").getDouble("1h");
-        // Current issue with "rain" parsing in JSON
+        
 
         // Email message
         double temperatureCelsius = temperature - 273.15;
