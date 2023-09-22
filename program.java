@@ -72,40 +72,90 @@ public class program {
 
         String apiKey = "e1ed9b58bb55042bed20f20af00189e3";
 
-        // Instance of WeatherAPI
+        // Instance of WeatherAPI and FiveDayWeatherAPI
         WeatherAPI weatherAPI = new WeatherAPI(apiKey);
+        FiveDayWeatherAPI fiveDayWeatherAPI = new FiveDayWeatherAPI(apiKey);
 
         // Location for data
         String userLocation;
+        String zipCodePattern = "^\\d{5}(?:-\\d{4})?$";
+
 
         while (true) {
             System.out.println("""
                     \s
-                    Please enter the city that you want weather data from.
+                    Please enter the zip code of the city that you want weather data from.
                     """);
 
             userLocation = scanner.nextLine();
 
-            if (userLocation.matches("^[A-Za-z ]+$")) {
+            if (userLocation.matches(zipCodePattern)) {
                 break;
             } else {
-                System.out.println("ERROR: Name of city incorrect or not found.");
+                System.out.println("ERROR: ZIP code incorrect or not found.");
             }
         }
-        // TODO: Checking for HTTPS functionality, if not use HTTP
 
-        String apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + userLocation + "&appid=" + apiKey;
+        String apiUrl = "https://api.openweathermap.org/data/2.5/weather?zip=" + userLocation + "&appid=" + apiKey;
 
         // Getting weather data
         Map<String, Object> weatherData = weatherAPI.getWeatherData(userLocation);
+        Map<String, Object> weatherDataForecast = fiveDayWeatherAPI.getWeatherData(userLocation);
 
-        // Process weather data
+        // Process current weather data
         JSONObject jsonData = new JSONObject(weatherData);
+
+        // Process forecasted weather data
+        JSONObject jsonDataForecast = new JSONObject(weatherDataForecast);
+
+        JSONArray forecastList = jsonDataForecast.getJSONArray("list");
+
+        Map<String, List<JSONObject>> dailyForecasts = new HashMap<>();
+
+        for (int i = 0; i < forecastList.length(); i++) {
+            JSONObject dayForecast = forecastList.getJSONObject(i);
+            String date = dayForecast.getString("dt_txt").split(" ")[0];
+
+            dailyForecasts.computeIfAbsent(date, k -> new ArrayList<>()).add(dayForecast);
+        }
+
+        // Calculate average temperature for each day
+        for (Map.Entry<String, List<JSONObject>> entry : dailyForecasts.entrySet()) {
+            String date = entry.getKey();
+            List<JSONObject> dayForecasts = entry.getValue();
+
+            double totalTemp = 0.0;
+            int dataPoints = 0;
+
+            for (JSONObject forecast : dayForecasts) {
+                JSONObject main = forecast.getJSONObject("main");
+                double temperature = main.getDouble("temp"); // Temperature in Kelvin
+
+                // Convert temperature to Celsius or Fahrenheit if needed
+
+                totalTemp += temperature;
+                dataPoints++;
+            }
+
+            if (dataPoints > 0) {
+                double averageTemp = totalTemp / dataPoints;
+                System.out.println("Date: " + date);
+                System.out.println("Average Temperature: " + averageTemp + " K"); // You can convert to C or F
+            }
+        }
+
+
+
+
+
+
+
+
+        //
 
         double temperature = jsonData.getJSONObject("main").getDouble("temp");
         String weatherDescription = jsonData.getJSONArray("weather").getJSONObject(0).getString("description");
-        //double precipitationChance = jsonData.getJSONObject("rain").getDouble("1h");
-        // Current issue with "rain" parsing in JSON
+
 
         // Email message
         double temperatureCelsius = temperature - 273.15;
@@ -113,16 +163,22 @@ public class program {
 
         String lineSeparator = System.lineSeparator();
 
+        // Current Weather
         String emailMessage = "Hello, " + userName + "." + lineSeparator + lineSeparator;
-        emailMessage += "Here is the weather forecast for " + userLocation + ":" + lineSeparator;
+        emailMessage += "Here is the current weather forecast for " + userLocation + ":" + lineSeparator;
         emailMessage += "Temperature: " + temperature + "°F (" + temperatureCelsius + "°C)" + lineSeparator;
         emailMessage += "Weather description: " + weatherDescription + lineSeparator + lineSeparator;
-        emailMessage += "Thank you for using the Java Weather Program." + lineSeparator;
+
+        // 5-Day Forecast
+
+
+
+        // emailMessage += "Thank you for using the Java Weather Program." + lineSeparator;
 
         String recipientEmail = emailAddress;
         String subject = "Weather forecast for " + userName + ".";
         String message = """
-                Today's weather forecast:
+                Five day weather forecast:
                 
                
                 """ + lineSeparator + emailMessage;

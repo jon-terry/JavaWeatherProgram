@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ public class WeatherAPI {
     public Map<String, Object> getWeatherData(String location) {
         try {
             // Construct URL for API request
-            String apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" + location + "&appid=" + apiKey;
+            String apiUrl = "http://api.openweathermap.org/data/2.5/weather?zip=" + location + "&appid=" + apiKey;
             URL url = new URL(apiUrl);
 
             // Open a connection to URL
