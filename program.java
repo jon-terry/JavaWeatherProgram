@@ -12,6 +12,7 @@ public class program {
         String userName;
         String emailAddress;
         int zipCode;
+        int decimalPlaces = 2;
 
         System.out.println("""
                 \s
@@ -110,7 +111,7 @@ public class program {
 
         JSONArray forecastList = jsonDataForecast.getJSONArray("list");
 
-        Map<String, List<JSONObject>> dailyForecasts = new HashMap<>();
+        TreeMap<String, List<JSONObject>> dailyForecasts = new TreeMap<>();
 
         for (int i = 0; i < forecastList.length(); i++) {
             JSONObject dayForecast = forecastList.getJSONObject(i);
@@ -119,47 +120,14 @@ public class program {
             dailyForecasts.computeIfAbsent(date, k -> new ArrayList<>()).add(dayForecast);
         }
 
-        // Calculate average temperature for each day
-        for (Map.Entry<String, List<JSONObject>> entry : dailyForecasts.entrySet()) {
-            String date = entry.getKey();
-            List<JSONObject> dayForecasts = entry.getValue();
-
-            double totalTemp = 0.0;
-            int dataPoints = 0;
-
-            for (JSONObject forecast : dayForecasts) {
-                JSONObject main = forecast.getJSONObject("main");
-                double temperature = main.getDouble("temp"); // Temperature in Kelvin
-
-                // Convert temperature to Celsius or Fahrenheit if needed
-
-                totalTemp += temperature;
-                dataPoints++;
-            }
-
-            if (dataPoints > 0) {
-                double averageTemp = totalTemp / dataPoints;
-                System.out.println("Date: " + date);
-                System.out.println("Average Temperature: " + averageTemp + " K"); // You can convert to C or F
-            }
-        }
-
-
-
-
-
-
-
-
-        //
 
         double temperature = jsonData.getJSONObject("main").getDouble("temp");
         String weatherDescription = jsonData.getJSONArray("weather").getJSONObject(0).getString("description");
 
 
         // Email message
-        double temperatureCelsius = temperature - 273.15;
-        temperature = (temperatureCelsius * 9/5) + 32;
+        double temperatureCelsius = Math.round((temperature - 273.15) * Math.pow(10,decimalPlaces)) / Math.pow(10,decimalPlaces);
+        temperature = Math.round(((temperatureCelsius * 9/5) + 32) * Math.pow(10,decimalPlaces)) / Math.pow(10,decimalPlaces);
 
         String lineSeparator = System.lineSeparator();
 
@@ -171,17 +139,50 @@ public class program {
 
         // 5-Day Forecast
 
+        emailMessage += "Here is the 5-day weather forecast for " + userLocation + " :" + lineSeparator;
+        emailMessage += lineSeparator;
+
+        for (Map.Entry<String, List<JSONObject>> entry : dailyForecasts.entrySet()) {
+            String date = entry.getKey();
+            List<JSONObject> dayForecasts = entry.getValue();
+
+            double totalTemp = 0.0;
+            int dataPoints = 0;
+
+            for (JSONObject forecast : dayForecasts) {
+                JSONObject main = forecast.getJSONObject("main");
+                temperature = main.getDouble("temp"); // In Kelvin
+
+                totalTemp += temperature;
+                dataPoints++;
+            }
+
+            if (dataPoints > 0) {
+                double averageTemp = totalTemp / dataPoints;
+                double celsiusAverageTemp = averageTemp - 273.15;
+                celsiusAverageTemp = Math.round(celsiusAverageTemp * Math.pow(10,decimalPlaces)) / Math.pow(10,decimalPlaces);
+
+                double fahrenheitAverageTemp = (celsiusAverageTemp * 9/5) + 32;
+                fahrenheitAverageTemp = Math.round(fahrenheitAverageTemp * Math.pow(10,decimalPlaces)) / Math.pow(10,decimalPlaces);
 
 
-        // emailMessage += "Thank you for using the Java Weather Program." + lineSeparator;
 
-        String recipientEmail = emailAddress;
+                emailMessage += "Date: " + date + lineSeparator;
+
+                emailMessage += "Average Temperature: " + celsiusAverageTemp + " °C (" + fahrenheitAverageTemp + " °F)"
+                        + lineSeparator + lineSeparator;
+
+            }
+        }
+
         String subject = "Weather forecast for " + userName + ".";
         String message = """
-                Five day weather forecast:
+                Current and Five-Day weather forecast:
                 
                
-                """ + lineSeparator + emailMessage;
+                """ + lineSeparator + emailMessage +
+                lineSeparator + lineSeparator +
+                "Thank you for using the Java Weather Program.";
 
         EmailSender.sendEmail(emailAddress, subject, message);
 
