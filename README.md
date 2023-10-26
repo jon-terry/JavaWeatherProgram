@@ -1,5 +1,6 @@
 # Java Weather Program
 
+![image](https://github.com/jon-terry/JavaWeatherProgram/assets/50545626/a06b3dd5-2dfb-48ab-9ab5-8d709744f046)
 
 
 
