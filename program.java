@@ -71,7 +71,7 @@ public class program {
         }
         // Finished checking user's name and email address.
 
-        String apiKey = "e1ed9b58bb55042bed20f20af00189e3";
+        String apiKey = "/*ENTER API KEY HERE*/";
 
         // Instance of WeatherAPI and FiveDayWeatherAPI
         WeatherAPI weatherAPI = new WeatherAPI(apiKey);
