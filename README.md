@@ -1,7 +1,6 @@
 # Java Weather Program
 
 
-![iconlogo](https://github.com/trisolix/JavaWeatherProgram/assets/50545626/8a31e2e5-51ef-4b85-a8c0-012ae1d49d60)
 
 
 </br>
